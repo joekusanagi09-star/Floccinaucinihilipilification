@@ -1,1 +1,95 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bouncing Rectangle Corner Counter</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    #counter {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+<div id="counter">Corner Hits: 0</div>
+<canvas id="canvas"></canvas><script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let rect = {
+  x: 100,
+  y: 100,
+  width: 80,
+  height: 60,
+  dx: 4,
+  dy: 3
+};
+
+let cornerHits = 0;
+const counterDisplay = document.getElementById('counter');
+
+function isCornerHit() {
+  const hitLeft = rect.x <= 0;
+  const hitRight = rect.x + rect.width >= canvas.width;
+  const hitTop = rect.y <= 0;
+  const hitBottom = rect.y + rect.height >= canvas.height;
+
+  return (hitLeft || hitRight) && (hitTop || hitBottom);
+}
+
+function update() {
+  rect.x += rect.dx;
+  rect.y += rect.dy;
+
+  let bouncedX = false;
+  let bouncedY = false;
+
+  if (rect.x <= 0 || rect.x + rect.width >= canvas.width) {
+    rect.dx *= -1;
+    bouncedX = true;
+  }
+
+  if (rect.y <= 0 || rect.y + rect.height >= canvas.height) {
+    rect.dy *= -1;
+    bouncedY = true;
+  }
+
+  // Count ONLY when both axes bounce at same frame (perfect corner hit)
+  if (bouncedX && bouncedY) {
+    cornerHits++;
+    counterDisplay.textContent = "Corner Hits: " + cornerHits;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'lime';
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+// Resize handling
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script></body>
+</html>
