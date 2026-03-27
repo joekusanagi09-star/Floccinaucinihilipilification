@@ -1,81 +1,68 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bouncing Rectangle Corner Counter</title>
+  <title>Bouncing Ball in a Square</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
-      background: #111;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       color: white;
       font-family: Arial, sans-serif;
-    }
-    #counter {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      font-size: 20px;
-    }
+    }canvas {
+  background: #020617;
+  border: 4px solid #38bdf8;
+  border-radius: 12px;
+}
+
   </style>
 </head>
 <body>
-<div id="counter">Corner Hits: 0</div>
-<canvas id="canvas"></canvas><script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+<canvas id="canvas" width="500" height="500"></canvas><script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const squareSize = canvas.width; // square area
 
-let rect = {
-  x: 100,
-  y: 100,
-  width: 80,
-  height: 60,
-  dx: 4,
-  dy: 3
+let ball = {
+  x: 250,
+  y: 250,
+  radius: 15,
+  dx: 3,
+  dy: 2
 };
 
-let cornerHits = 0;
-const counterDisplay = document.getElementById('counter');
-
-function isCornerHit() {
-  const hitLeft = rect.x <= 0;
-  const hitRight = rect.x + rect.width >= canvas.width;
-  const hitTop = rect.y <= 0;
-  const hitBottom = rect.y + rect.height >= canvas.height;
-
-  return (hitLeft || hitRight) && (hitTop || hitBottom);
-}
-
 function update() {
-  rect.x += rect.dx;
-  rect.y += rect.dy;
+  ball.x += ball.dx;
+  ball.y += ball.dy;
 
-  let bouncedX = false;
-  let bouncedY = false;
-
-  if (rect.x <= 0 || rect.x + rect.width >= canvas.width) {
-    rect.dx *= -1;
-    bouncedX = true;
+  // Bounce off walls
+  if (ball.x - ball.radius <= 0 || ball.x + ball.radius >= squareSize) {
+    ball.dx *= -1;
   }
 
-  if (rect.y <= 0 || rect.y + rect.height >= canvas.height) {
-    rect.dy *= -1;
-    bouncedY = true;
-  }
-
-  // Count ONLY when both axes bounce at same frame (perfect corner hit)
-  if (bouncedX && bouncedY) {
-    cornerHits++;
-    counterDisplay.textContent = "Corner Hits: " + cornerHits;
+  if (ball.y - ball.radius <= 0 || ball.y + ball.radius >= squareSize) {
+    ball.dy *= -1;
   }
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = 'lime';
-  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+  ctx.clearRect(0, 0, squareSize, squareSize);
+
+  // Draw square boundary (optional visual)
+  ctx.strokeStyle = "#38bdf8";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, squareSize, squareSize);
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = "#22c55e";
+  ctx.fill();
+  ctx.closePath();
 }
 
 function loop() {
@@ -85,11 +72,5 @@ function loop() {
 }
 
 loop();
-
-// Resize handling
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
 </script></body>
 </html>
